@@ -11,6 +11,7 @@ module RubyLLM
           "models/#{@model}:generateContent"
         end
 
+        # rubocop:disable Metrics/ParameterLists
         def render_payload(messages, tools:, temperature:, model:, options:, stream: false) # rubocop:disable Lint/UnusedMethodArgument
           @model = model # Store model for completion_url/stream_url
 
@@ -24,6 +25,7 @@ module RubyLLM
           payload[:tools] = format_tools(tools) if tools.any?
           payload
         end
+        # rubocop:enable Metrics/ParameterLists
 
         private
 

@@ -61,7 +61,7 @@ RSpec.describe RubyLLM::Chat do
   end
 
   describe '#with_options' do
-    it 'sets the temperature and returns self' do
+    it 'sets custom options and returns self' do # rubocop:disable RSpec/MultipleExpectations
       chat = described_class.new
       result = chat.with_options(max_completion_tokens: 1)
       expect(chat.instance_variable_get(:@options)).to eq(max_completion_tokens: 1)
