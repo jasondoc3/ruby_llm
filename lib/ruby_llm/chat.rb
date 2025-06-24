@@ -25,6 +25,7 @@ module RubyLLM
       @temperature = 0.7
       @messages = []
       @tools = {}
+      @options = {}
       @on = {
         new_message: nil,
         end_message: nil
@@ -78,6 +79,11 @@ module RubyLLM
       self
     end
 
+    def with_options(**options)
+      @options = options
+      self
+    end
+
     def on_new_message(&block)
       @on[:new_message] = block
       self
@@ -100,6 +106,7 @@ module RubyLLM
         temperature: @temperature,
         model: @model.id,
         connection: @connection,
+        options: @options,
         &
       )
       @on[:end_message]&.call(response)
