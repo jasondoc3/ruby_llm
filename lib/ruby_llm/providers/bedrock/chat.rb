@@ -52,16 +52,11 @@ module RubyLLM
         end
 
         def build_base_payload(chat_messages, temperature, model, options)
-          max_tokens = options[:max_tokens]
-          max_tokens_for_model = RubyLLM.models.find(model)&.max_tokens
-          max_tokens = max_tokens_for_model if max_tokens.nil? || max_tokens > max_tokens_for_model
-          max_tokens ||= 4096
-
           options.merge(
             anthropic_version: 'bedrock-2023-05-31',
             messages: chat_messages.map { |msg| format_message(msg) },
             temperature: temperature,
-            max_tokens: max_tokens
+            max_tokens: options[:max_tokens] || RubyLLM.models.find(model)&.max_tokens || 4096
           )
         end
       end
