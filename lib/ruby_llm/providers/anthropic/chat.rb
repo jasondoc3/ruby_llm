@@ -11,11 +11,11 @@ module RubyLLM
           '/v1/messages'
         end
 
-        def render_payload(messages, tools:, temperature:, model:, stream: false)
+        def render_payload(messages, tools:, temperature:, model:, options:, stream: false)
           system_messages, chat_messages = separate_messages(messages)
           system_content = build_system_content(system_messages)
 
-          build_base_payload(chat_messages, temperature, model, stream).tap do |payload|
+          build_base_payload(chat_messages, temperature, model, options, stream).tap do |payload|
             add_optional_fields(payload, system_content:, tools:)
           end
         end
@@ -35,14 +35,19 @@ module RubyLLM
           system_messages.map { |msg| format_message(msg)[:content] }.join("\n\n")
         end
 
-        def build_base_payload(chat_messages, temperature, model, stream)
-          {
+        def build_base_payload(chat_messages, temperature, model, options, stream)
+          max_tokens = options[:max_tokens]
+          max_tokens_for_model = RubyLLM.models.find(model)&.max_tokens
+          max_tokens = max_tokens_for_model if max_tokens.nil? || max_tokens > max_tokens_for_model
+          max_tokens ||= 4096
+
+          options.merge(
             model: model,
             messages: chat_messages.map { |msg| format_message(msg) },
             temperature: temperature,
             stream: stream,
-            max_tokens: RubyLLM.models.find(model)&.max_tokens || 4096
-          }
+            max_tokens: max_tokens
+          )
         end
 
         def add_optional_fields(payload, system_content:, tools:)
