@@ -13,11 +13,12 @@ module RubyLLM
       def complete(messages, tools:, temperature:, model:, connection:, options: {}, &)
         normalized_temperature = maybe_normalize_temperature(temperature, model)
 
-        payload = options.merge(render_payload(messages,
-                                               tools: tools,
-                                               temperature: normalized_temperature,
-                                               model: model,
-                                               stream: block_given?))
+        payload = render_payload(messages,
+                                 tools: tools,
+                                 temperature: normalized_temperature,
+                                 model: model,
+                                 options:,
+                                 stream: block_given?)
 
         if block_given?
           stream_response connection, payload, &

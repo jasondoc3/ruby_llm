@@ -11,19 +11,28 @@ module RubyLLM
           "models/#{@model}:generateContent"
         end
 
-        def render_payload(messages, tools:, temperature:, model:, stream: false) # rubocop:disable Lint/UnusedMethodArgument
+        def render_payload(messages, tools:, temperature:, model:, options:, stream: false) # rubocop:disable Lint/UnusedMethodArgument
           @model = model # Store model for completion_url/stream_url
+
           payload = {
             contents: format_messages(messages),
-            generationConfig: {
+            generationConfig: format_options(options).merge(
               temperature: temperature
-            }
+            )
           }
+
           payload[:tools] = format_tools(tools) if tools.any?
           payload
         end
 
         private
+
+        def format_options(options)
+          options.transform_keys do |key|
+            parts = key.to_s.split('_')
+            :"#{parts.shift}#{parts.map { |part| part.to_s.capitalize }.join}"
+          end
+        end
 
         def format_messages(messages)
           messages.map do |msg|

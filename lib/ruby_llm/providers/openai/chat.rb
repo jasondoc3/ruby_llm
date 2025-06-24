@@ -11,12 +11,12 @@ module RubyLLM
 
         module_function
 
-        def render_payload(messages, tools:, temperature:, model:, stream: false)
-          payload = {
+        def render_payload(messages, tools:, temperature:, model:, options:, stream: false)
+          payload = options.merge(
             model: model,
             messages: format_messages(messages),
             stream: stream
-          }
+          )
 
           # Only include temperature if it's not nil (some models don't accept it)
           payload[:temperature] = temperature unless temperature.nil?
