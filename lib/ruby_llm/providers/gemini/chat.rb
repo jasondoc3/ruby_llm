@@ -28,9 +28,12 @@ module RubyLLM
         private
 
         def format_options(options)
-          options.transform_keys do |key|
-            parts = key.to_s.split('_')
-            :"#{parts.shift}#{parts.map { |part| part.to_s.capitalize }.join}"
+          {}.tap do |transformed|
+            options.each do |key, value|
+              parts = key.to_s.split('_')
+              new_key = :"#{parts.shift}#{parts.map { |part| part.to_s.capitalize }.join}"
+              transformed[new_key] = value.is_a?(Hash) ? format_options(value) : value
+            end
           end
         end
 
